@@ -5,6 +5,7 @@ import {
     Block, generateNextBlock, generatenextBlockWithTransaction, generateRawNextBlock, getAccountBalance,
     getBlockchain
 } from './blockchain';
+import { getPublicFromWallet } from './wallet';
 import {connectToPeers, getSockets, initP2PServer} from './p2p';
 import {initWallet} from './wallet';
 
@@ -44,6 +45,10 @@ const initHttpServer = (myHttpPort: number) => {
         } else {
             res.send(newBlock);
         }
+    });
+
+    app.get('/address', (req, res) => {
+      res.send({ address: getPublicFromWallet()});
     });
 
     app.get('/balance', (req, res) => {

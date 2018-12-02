@@ -88,11 +88,11 @@ const validateTransaction = (transaction: Transaction, aUnspentTxOuts: UnspentTx
 };
 
 const validateBlockTransactions = (aTransactions: Transaction[], aUnspentTxOuts: UnspentTxOut[], blockIndex: number): boolean => {
-    const coinbaseTx = aTransactions[0];
-    if (!validateCoinbaseTx(coinbaseTx, blockIndex)) {
-        console.log('invalid coinbase transaction: ' + JSON.stringify(coinbaseTx));
-        return false;
-    }
+    // const coinbaseTx = aTransactions[0];
+    // if (!validateCoinbaseTx(coinbaseTx, blockIndex)) {
+    //     console.log('invalid coinbase transaction: ' + JSON.stringify(coinbaseTx));
+    //     return false;
+    // }
 
     // check for duplicate txIns. Each txIn can be included only once
     const txIns: TxIn[] = _(aTransactions)
@@ -226,10 +226,21 @@ const updateUnspentTxOuts = (aTransactions: Transaction[], aUnspentTxOuts: Unspe
         .map((t) => t.txIns)
         .reduce((a, b) => a.concat(b), [])
         .map((txIn) => new UnspentTxOut(txIn.txOutId, txIn.txOutIndex, '', 0));
+    console.log('ConsumedTxOouts: ' + JSON.stringify(consumedTxOuts));
 
     const resultingUnspentTxOuts = aUnspentTxOuts
-        .filter(((uTxO) => !findUnspentTxOut(uTxO.txOutId, uTxO.txOutIndex, consumedTxOuts)))
+        .filter(((uTxO) => {
+          console.log('utx0: ' + JSON.stringify(uTxO));
+          console.log('find: ' + JSON.stringify(findUnspentTxOut(uTxO.txOutId, uTxO.txOutIndex, consumedTxOuts)));
+          return !findUnspentTxOut(uTxO.txOutId, uTxO.txOutIndex, consumedTxOuts);
+        }))
         .concat(newUnspentTxOuts);
+    console.log('New Unspent: ');
+    console.log(newUnspentTxOuts);
+    console.log('Before: ');
+    console.log(aUnspentTxOuts);
+    console.log('After: ');
+    console.log(resultingUnspentTxOuts);
 
     return resultingUnspentTxOuts;
 };
